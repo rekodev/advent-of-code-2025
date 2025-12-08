@@ -36,6 +36,14 @@ function processCalculations(input: Array<string>) {
   return sum;
 }
 
+/**
+ * Processes calculations for Part 2 by handling variable-width columns.
+ * Identifies column boundaries based on operator positions, extracts numbers from each column,
+ * and reads vertically within columns to form final numbers for calculation.
+ *
+ * @param input - Array of strings where the last element contains operators and others contain numbers
+ * @returns Sum of all column calculations after vertical number reconstruction
+ */
 function processCalculationsPart2(input: Array<string>) {
   const columnSeparatorIndicesAndOperators: Record<
     number,
@@ -46,6 +54,7 @@ function processCalculationsPart2(input: Array<string>) {
 
   const maxRowLength = Math.max(...input.slice(0, -1).map((row) => row.length));
 
+  // Skip first iteration because it would immediately encounter an operator
   for (let i = 1; i <= maxRowLength; i++) {
     if (
       input[input.length - 1]?.[i] === "*" ||
@@ -93,43 +102,30 @@ function processCalculationsPart2(input: Array<string>) {
       currentNumber = currentNumber.concat(row?.[j] || "");
     }
   }
-  console.log({ columnSeparatorIndicesAndOperators });
 
   let finalResult = 0;
 
   Object.values(columnMap).forEach((value) => {
     const { rows, operator } = value;
-
-    const stringifiedFinalNumbers = [];
+    let localResult = 0;
     let currentIdx = 0;
 
-    while (true) {
-      if (currentIdx === rows[0]?.length) break;
-
+    while (currentIdx < Number(rows[0]?.length)) {
       let finalNumber = "";
 
       for (const row of rows) {
-        if (row[currentIdx] !== " ") {
+        if (row[currentIdx] !== " ")
           finalNumber = finalNumber.concat(row[currentIdx] || "");
-        }
       }
-
-      stringifiedFinalNumbers.push(finalNumber);
-      finalNumber = "";
-      currentIdx++;
-    }
-
-    let localResult = 0;
-
-    for (let i = 0; i < stringifiedFinalNumbers.length; i++) {
-      const strFinNum = stringifiedFinalNumbers[i];
 
       if (operator === "*") {
-        if (!localResult) localResult = Number(strFinNum);
-        else localResult *= Number(strFinNum);
+        if (!localResult) localResult = Number(finalNumber);
+        else localResult *= Number(finalNumber);
       } else if (operator === "+") {
-        localResult += Number(strFinNum);
+        localResult += Number(finalNumber);
       }
+
+      currentIdx++;
     }
 
     finalResult += localResult;
@@ -149,16 +145,16 @@ const exampleInput = `123 328  51 64
 *   +   *   +  `;
 
 // Part 1 (Example)
-console.log(processCalculations(formatInput(exampleInput)));
+console.log(processCalculations(formatInput(exampleInput))); // 4277556
 
-// Part 1 (Example)
-console.log(processCalculationsPart2(formatInput(exampleInput)));
+// Part 2 (Example)
+console.log(processCalculationsPart2(formatInput(exampleInput))); // 3263827
 
 // Actual input
 const input = readInput("/day6/input.txt");
 
 // Part 1 (Actual)
-console.log(processCalculations(formatInput(input)));
+console.log(processCalculations(formatInput(input))); // 6605396225322
 
 // Part 2 (Actual)
-console.log(processCalculationsPart2(formatInput(input)));
+console.log(processCalculationsPart2(formatInput(input))); // 11052310600986
