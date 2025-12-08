@@ -145,4 +145,4 @@ const input = readInput("/day5/input.txt");
 console.log(getListOfFreshIngredients(input)); // 848
 
 // Part 2 (Actual)
-console.log(getListOfFreshIngredientsPart2(input)); // 1370
+console.log(getListOfFreshIngredientsPart2(input)); // 334714395325710
